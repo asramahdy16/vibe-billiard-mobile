@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../core/constants/route_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/auth_provider.dart';
+import '../../widgets/common/glass_container.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -16,7 +18,9 @@ class ProfileScreen extends ConsumerWidget {
     if (user == null) return const Center(child: Text('Belum login'));
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: const Text('Profil'),
         actions: [
           IconButton(
@@ -65,15 +69,15 @@ class ProfileScreen extends ConsumerWidget {
               icon: LucideIcons.user,
               title: 'Edit Profil',
               onTap: () => context.push(RouteConstants.editProfile),
-            ),
+            ).animate().fadeIn(delay: 100.ms, duration: 500.ms).slideX(begin: 0.1),
             const SizedBox(height: 16),
             _MenuTile(
               icon: LucideIcons.lock,
               title: 'Ganti Password',
               onTap: () => context.push(RouteConstants.changePassword),
-            ),
+            ).animate().fadeIn(delay: 200.ms, duration: 500.ms).slideX(begin: 0.1),
           ],
-        ),
+        ).animate().fadeIn(duration: 500.ms),
       ),
     );
   }
@@ -92,24 +96,24 @@ class _MenuTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      onTap: onTap,
-      leading: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceContHigh,
-          borderRadius: BorderRadius.circular(10),
+    return GlassContainer(
+      padding: EdgeInsets.zero,
+      opacity: 0.05,
+      child: ListTile(
+        onTap: onTap,
+        leading: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceContHigh,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: AppColors.primary, size: 20),
         ),
-        child: Icon(icon, color: AppColors.primary, size: 20),
-      ),
-      title: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-      trailing: const Icon(LucideIcons.chevronRight, size: 20),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: AppColors.outlineVariant.withOpacity(0.1)),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        trailing: const Icon(LucideIcons.chevronRight, size: 20),
       ),
     );
   }

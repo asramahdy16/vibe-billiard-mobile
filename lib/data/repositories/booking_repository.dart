@@ -1,4 +1,5 @@
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/api_constants.dart';
 import '../../core/network/api_client.dart';
@@ -12,13 +13,44 @@ class BookingRepository {
 
   Future<List<BookingModel>> getMyBookings() async {
     final response = await _apiClient.get(ApiConstants.bookings);
-    final data = response.data['data'] as List;
-    return data.map((json) => BookingModel.fromJson(json)).toList();
+    final responseData = response.data;
+    
+    // Handle different response structures from the API
+    List rawList;
+    if (responseData is Map && responseData.containsKey('data')) {
+      final data = responseData['data'];
+      if (data is List) {
+        rawList = data;
+      } else if (data is Map && data.containsKey('data')) {
+        // Paginated response: { data: { data: [...], ... } }
+        rawList = data['data'] as List;
+      } else {
+        rawList = [];
+      }
+    } else if (responseData is List) {
+      rawList = responseData;
+    } else {
+      rawList = [];
+    }
+    
+    final bookings = <BookingModel>[];
+    for (final json in rawList) {
+      try {
+        bookings.add(BookingModel.fromJson(json));
+      } catch (e) {
+        debugPrint('Error parsing booking: $e');
+      }
+    }
+    return bookings;
   }
 
   Future<BookingModel> getBookingById(int id) async {
     final response = await _apiClient.get(ApiConstants.bookingDetail(id));
-    return BookingModel.fromJson(response.data['data']);
+    final responseData = response.data;
+    final data = responseData is Map && responseData.containsKey('data')
+        ? responseData['data']
+        : responseData;
+    return BookingModel.fromJson(data);
   }
 
   Future<BookingModel> createBooking({
@@ -40,13 +72,21 @@ class BookingRepository {
         if (catatan != null && catatan.isNotEmpty) 'catatan': catatan,
       },
     );
-    return BookingModel.fromJson(response.data['data']);
+    final responseData = response.data;
+    final data = responseData is Map && responseData.containsKey('data')
+        ? responseData['data']
+        : responseData;
+    return BookingModel.fromJson(data);
   }
 
   // Called to update the status to CANCELLED logic
   Future<BookingModel> cancelBooking(int id) async {
     final response = await _apiClient.patch(ApiConstants.cancelBooking(id));
-    return BookingModel.fromJson(response.data['data']);
+    final responseData = response.data;
+    final data = responseData is Map && responseData.containsKey('data')
+        ? responseData['data']
+        : responseData;
+    return BookingModel.fromJson(data);
   }
 }
 
@@ -54,3 +94,4 @@ final bookingRepositoryProvider = Provider<BookingRepository>((ref) {
   final apiClient = ref.read(apiClientProvider);
   return BookingRepository(apiClient);
 });
+

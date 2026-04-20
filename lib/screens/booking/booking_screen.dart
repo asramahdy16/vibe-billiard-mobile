@@ -59,7 +59,10 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     final state = ref.watch(bookingWizardProvider);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => _prevStep(state.currentStep),

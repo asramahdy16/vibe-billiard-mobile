@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_decorations.dart';
 import '../../core/utils/formatters.dart';
 import '../../data/models/package_model.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../common/glass_container.dart';
 
 class PackageSelector extends StatelessWidget {
   final PackageModel package;
@@ -27,20 +27,15 @@ class PackageSelector extends StatelessWidget {
 
     return GestureDetector(
       onTap: isEligible ? onTap : null,
-      child: Container(
+      child: GlassContainer(
         margin: const EdgeInsets.only(bottom: 16),
-        decoration: isSelected
-            ? AppDecorations.selectedCard
-            : AppDecorations.cardElevated.copyWith(
-                color: isEligible
-                    ? AppColors.surfaceContHigh
-                    : AppColors.surfaceContLow,
-                border: Border.all(
-                  color: isEligible
-                      ? AppColors.outlineVariant.withOpacity(0.1)
-                      : Colors.transparent,
-                ),
-              ),
+        opacity: isSelected ? 0.3 : (isEligible ? 0.05 : 0.01),
+        border: Border.all(
+          color: isSelected 
+              ? AppColors.primaryContainer 
+              : (isEligible ? Colors.white.withOpacity(0.1) : Colors.transparent),
+          width: isSelected ? 2 : 1,
+        ),
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,12 +91,9 @@ class PackageSelector extends StatelessWidget {
             ),
             if (package.isHemat) ...[
               const SizedBox(height: 12),
-              Container(
+              GlassContainer(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceCont,
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                opacity: 0.1,
                 child: Row(
                   children: [
                     Icon(

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 
 import '../../core/constants/route_constants.dart';
+import '../../core/network/api_exceptions.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../data/enums/booking_status.dart';
@@ -11,6 +12,8 @@ import '../../providers/booking_provider.dart';
 import '../../widgets/common/error_view.dart';
 import '../../widgets/common/loading_indicator.dart';
 import '../../widgets/common/status_badge.dart';
+import '../../widgets/common/glass_container.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class MyBookingsScreen extends ConsumerStatefulWidget {
   const MyBookingsScreen({super.key});
@@ -29,8 +32,11 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
     final bookingsAsync = ref.watch(myBookingsProvider);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: const Text('Riwayat Booking'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: SingleChildScrollView(
@@ -108,13 +114,9 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
                         ref.invalidate(myBookingsProvider);
                       });
                     },
-                    child: Container(
+                    child: GlassContainer(
                       padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceContHigh,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.1)),
-                      ),
+                      opacity: 0.05,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -177,15 +179,26 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
                         ],
                       ),
                     ),
-                  );
+                  ).animate().fadeIn(delay: Duration(milliseconds: 100 * index), duration: 500.ms).slideY(begin: 0.1);
                 },
               );
             },
             loading: () => const LoadingIndicator(),
-            error: (e, _) => ErrorView.network(onRetry: () => ref.invalidate(myBookingsProvider)),
+            error: (e, _) {
+              if (e is NetworkException) {
+                return ErrorView.network(onRetry: () => ref.invalidate(myBookingsProvider));
+              }
+              return ErrorView(
+                title: 'Gagal memuat data',
+                subtitle: e.toString(),
+                actionLabel: 'Coba Lagi',
+                onAction: () => ref.invalidate(myBookingsProvider),
+              );
+            },
           ),
         ),
       ),
     );
   }
 }
+

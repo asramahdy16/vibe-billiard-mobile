@@ -17,7 +17,7 @@ class TableModel {
   });
 
   factory TableModel.fromJson(Map<String, dynamic> json) => TableModel(
-        id: json['id'],
+        id: json['id'] is int ? json['id'] : int.tryParse(json['id']?.toString() ?? '') ?? 0,
         namaMeja: json['nama_meja'] ?? '',
         deskripsi: json['deskripsi'],
         gambar: json['gambar'],

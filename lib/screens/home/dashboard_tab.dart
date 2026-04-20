@@ -5,7 +5,9 @@ import '../../providers/booking_provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/utils/extensions.dart';
-
+import '../../core/network/api_exceptions.dart';
+import '../../widgets/common/glass_container.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 class DashboardTab extends ConsumerWidget {
   const DashboardTab({super.key});
 
@@ -59,7 +61,7 @@ class DashboardTab extends ConsumerWidget {
                     ),
                   ),
                 ],
-              ),
+              ).animate().fadeIn(duration: 500.ms).slideX(begin: -0.05),
               const SizedBox(height: 32),
 
               // Active Booking / Quick Actions
@@ -77,14 +79,10 @@ class DashboardTab extends ConsumerWidget {
                   final activeBooking = bookings.where((b) => b.isActive).firstOrNull;
                   
                   if (activeBooking != null) {
-                    return Container(
+                    return GlassContainer(
                       padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [AppColors.tertiary, AppColors.tertiaryContainer],
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+                      opacity: 0.15,
+                      color: AppColors.tertiaryContainer,
                       child: Row(
                         children: [
                           Container(
@@ -121,15 +119,10 @@ class DashboardTab extends ConsumerWidget {
                           ),
                         ],
                       ),
-                    );
+                    ).animate().fadeIn(delay: 200.ms, duration: 500.ms).slideY(begin: 0.1);
                   } else {
-                    return Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceContHigh,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.1)),
-                      ),
+                    return GlassContainer(
+                      opacity: 0.05,
                       child: Column(
                         children: [
                           const Icon(Icons.sports_baseball, size: 48, color: AppColors.outlineVariant),
@@ -140,11 +133,35 @@ class DashboardTab extends ConsumerWidget {
                           ),
                         ],
                       ),
-                    );
+                    ).animate().fadeIn(delay: 200.ms, duration: 500.ms).slideY(begin: 0.1);
                   }
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, _) => const Text('Gagal memuat aktivitas'),
+                error: (error, _) => GlassContainer(
+                  opacity: 0.05,
+                  child: Column(
+                    children: [
+                      Icon(
+                        error is NetworkException ? Icons.wifi_off : Icons.error_outline,
+                        size: 48,
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        error is NetworkException
+                            ? 'Tidak ada koneksi internet'
+                            : 'Gagal memuat aktivitas',
+                        style: const TextStyle(color: AppColors.onSurfaceVariant),
+                      ),
+                      const SizedBox(height: 12),
+                      TextButton.icon(
+                        onPressed: () => ref.invalidate(myBookingsProvider),
+                        icon: const Icon(Icons.refresh, size: 18),
+                        label: const Text('Coba Lagi'),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
@@ -153,3 +170,4 @@ class DashboardTab extends ConsumerWidget {
     );
   }
 }
+

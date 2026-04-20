@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_decorations.dart';
 import '../../data/models/table_model.dart';
+import '../common/glass_container.dart';
 
 
 
@@ -23,19 +23,14 @@ class TableCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: isAvailable ? onTap : null,
-      child: Container(
-        decoration: isSelected
-            ? AppDecorations.selectedCard
-            : AppDecorations.cardElevated.copyWith(
-                color: isAvailable
-                    ? AppColors.surfaceContHigh
-                    : AppColors.surfaceContLow,
-                border: Border.all(
-                  color: isAvailable
-                      ? AppColors.outlineVariant.withOpacity(0.1)
-                      : Colors.transparent,
-                ),
-              ),
+      child: GlassContainer(
+        opacity: isSelected ? 0.3 : (isAvailable ? 0.05 : 0.01),
+        border: Border.all(
+          color: isSelected 
+              ? AppColors.primaryContainer 
+              : (isAvailable ? Colors.white.withOpacity(0.1) : Colors.transparent),
+          width: isSelected ? 2 : 1,
+        ),
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

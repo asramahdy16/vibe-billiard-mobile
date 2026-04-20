@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/route_constants.dart';
 import '../../core/theme/app_colors.dart';
 
+import '../../widgets/common/background_shapes.dart';
+
 class HomeScreen extends ConsumerWidget {
   final Widget child;
 
@@ -43,7 +45,13 @@ class HomeScreen extends ConsumerWidget {
     final currentIndex = _calculateSelectedIndex(context);
 
     return Scaffold(
-      body: child,
+      extendBody: true, // For glassmorphism bottom nav if added later
+      body: Stack(
+        children: [
+          const BackgroundShapes(),
+          child,
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (index) => _onItemTapped(index, context),

@@ -20,7 +20,11 @@ class PaymentRepository {
         // Optional file upload logic would use Dio FormData here
       },
     );
-    return PaymentModel.fromJson(response.data['data']);
+    final responseData = response.data;
+    final data = responseData is Map && responseData.containsKey('data')
+        ? responseData['data']
+        : responseData;
+    return PaymentModel.fromJson(data);
   }
 }
 
@@ -28,3 +32,4 @@ final paymentRepositoryProvider = Provider<PaymentRepository>((ref) {
   final apiClient = ref.read(apiClientProvider);
   return PaymentRepository(apiClient);
 });
+

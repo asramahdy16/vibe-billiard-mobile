@@ -19,10 +19,10 @@ class PaymentModel {
   });
 
   factory PaymentModel.fromJson(Map<String, dynamic> json) => PaymentModel(
-        id: json['id'],
-        bookingId: json['booking_id'],
+        id: json['id'] is int ? json['id'] : int.tryParse(json['id']?.toString() ?? '') ?? 0,
+        bookingId: json['booking_id'] is int ? json['booking_id'] : int.tryParse(json['booking_id']?.toString() ?? '') ?? 0,
         metode: json['metode'] ?? 'cash',
-        jumlah: double.parse(json['jumlah'].toString()),
+        jumlah: double.tryParse(json['jumlah']?.toString() ?? '0') ?? 0,
         statusBayar: json['status_bayar'] ?? 'unpaid',
         buktiTransfer: json['bukti_transfer'],
         paidAt: json['paid_at'],

@@ -40,16 +40,16 @@ class BookingModel {
   });
 
   factory BookingModel.fromJson(Map<String, dynamic> json) => BookingModel(
-        id: json['id'],
-        userId: json['user_id'],
-        tableId: json['table_id'],
-        packageId: json['package_id'],
-        tanggal: json['tanggal'],
-        waktuMulai: json['waktu_mulai'],
-        waktuSelesai: json['waktu_selesai'],
-        durasiJam: json['durasi_jam'],
-        totalHarga: double.parse(json['total_harga'].toString()),
-        status: json['status'],
+        id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
+        userId: json['user_id'] is int ? json['user_id'] : int.tryParse(json['user_id']?.toString() ?? '') ?? 0,
+        tableId: json['table_id'] is int ? json['table_id'] : int.tryParse(json['table_id']?.toString() ?? '') ?? 0,
+        packageId: json['package_id'] is int ? json['package_id'] : int.tryParse(json['package_id']?.toString() ?? '') ?? 0,
+        tanggal: json['tanggal'] ?? '',
+        waktuMulai: json['waktu_mulai'] ?? '00:00',
+        waktuSelesai: json['waktu_selesai'] ?? '00:00',
+        durasiJam: json['durasi_jam'] is int ? json['durasi_jam'] : int.tryParse(json['durasi_jam']?.toString() ?? '') ?? 0,
+        totalHarga: double.tryParse(json['total_harga']?.toString() ?? '0') ?? 0,
+        status: json['status'] ?? 'pending',
         catatan: json['catatan'],
         table:
             json['table'] != null ? TableModel.fromJson(json['table']) : null,

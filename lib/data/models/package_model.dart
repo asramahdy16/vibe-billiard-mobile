@@ -23,19 +23,19 @@ class PackageModel {
   });
 
   factory PackageModel.fromJson(Map<String, dynamic> json) => PackageModel(
-        id: json['id'],
+        id: json['id'] is int ? json['id'] : int.tryParse(json['id']?.toString() ?? '') ?? 0,
         namaPaket: json['nama_paket'] ?? '',
         hargaPerJam: json['harga_per_jam'] != null
-            ? double.parse(json['harga_per_jam'].toString())
+            ? double.tryParse(json['harga_per_jam'].toString()) ?? 0
             : null,
         hargaFlat: json['harga_flat'] != null
-            ? double.parse(json['harga_flat'].toString())
+            ? double.tryParse(json['harga_flat'].toString()) ?? 0
             : null,
-        durasiMinJam: json['durasi_min_jam'] ?? 1,
+        durasiMinJam: json['durasi_min_jam'] is int ? json['durasi_min_jam'] : int.tryParse(json['durasi_min_jam']?.toString() ?? '') ?? 1,
         hariBerlaku: json['hari_berlaku'] ?? 'everyday',
         jamMulai: json['jam_mulai'],
         jamSelesai: json['jam_selesai'],
-        isActive: json['is_active'] ?? true,
+        isActive: json['is_active'] is bool ? json['is_active'] : (json['is_active'] == 1 || json['is_active'] == '1' || json['is_active'] == true),
       );
 
   bool get isReguler => hargaFlat == null;
@@ -45,11 +45,16 @@ class PackageModel {
   bool isEligibleForDate(DateTime date, String startTime, String endTime) {
     if (isReguler) return true; // Reguler always eligible
 
+    // Guard against empty or malformed time strings
+    if (startTime.isEmpty || endTime.isEmpty) return false;
+
     final dayOfWeek = date.weekday; // 1=Mon, 7=Sun
     final isWeekday = dayOfWeek >= 1 && dayOfWeek <= 5;
 
-    final startHour = int.parse(startTime.split(':')[0]);
-    final endHour = int.parse(endTime.split(':')[0]);
+    final startHour = int.tryParse(startTime.split(':')[0]) ?? -1;
+    final endHour = int.tryParse(endTime.split(':')[0]) ?? -1;
+
+    if (startHour < 0 || endHour < 0) return false;
 
     final isWithinHours = startHour >= 8 && endHour <= 17;
     final duration = endHour - startHour;

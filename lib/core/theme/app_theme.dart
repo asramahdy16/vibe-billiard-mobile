@@ -49,11 +49,11 @@ class AppTheme {
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceCont,
+        fillColor: Colors.white.withOpacity(0.05),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: AppColors.outlineVariant.withOpacity(0.2),
+            color: Colors.white.withOpacity(0.1),
           ),
         ),
         enabledBorder: OutlineInputBorder(
